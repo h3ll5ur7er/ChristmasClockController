@@ -1,0 +1,12 @@
+﻿<Application x:Class="ChristmasClockController.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ChristmasClockController"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <local:PicoViewModel x:Key="PicoViewModel" />
+        <local:MockViewModel x:Key="MockViewModel" />
+        <local:ImageConverter x:Key="ImageConverter" />
+        <local:ImageVisibilityConverter x:Key="ImageVisibilityConverter" />
+    </Application.Resources>
+</Application>
