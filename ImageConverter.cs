@@ -41,7 +41,7 @@ namespace ChristmasClockController {
                 var bmp = new Bitmap(33, 13);
                 var i = 0;
                 foreach(var c in GetCoordinates()){
-                    bmp.SetPixel(c.Item1, c.Item2, System.Drawing.Color.FromArgb(bytes[i +1], bytes[i], bytes[i +2]));
+                    bmp.SetPixel(c.Item1, c.Item2, System.Drawing.Color.FromArgb(bytes[i +2], bytes[i+3], bytes[i +1]));
                     i += 4;
                 }
                 var image = new BitmapImage();
