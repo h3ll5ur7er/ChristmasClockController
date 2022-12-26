@@ -82,6 +82,7 @@ namespace ChristmasClockController {
             disconnect();
             _serialPort = new SerialPort(ComPort, 115200);
             _serialPort.Open();
+            _serialPort.ReadExisting();
             _serialPort.DtrEnable = true;
             _serialPort.RtsEnable = true;
             App.Current.MainWindow.Title = "Connected to " + ComPort;
