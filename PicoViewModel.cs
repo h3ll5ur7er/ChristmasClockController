@@ -2,20 +2,16 @@
 using System.Diagnostics;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System;
 
 namespace ChristmasClockController {
     public class PicoViewModel : ViewModel {
-        private string _comPort = "";
-        private string _consoleInput = "";
-        private ObservableCollection<string> _comPorts = new ObservableCollection<string>();
-        private ObservableCollection<string> _console = new ObservableCollection<string>();
+        private string _comPort = string.Empty;
+        private string _consoleInput = string.Empty;
         private string _firmwareDirectory = "~/pico/ChristmasClockSDK";
-        private string _buffer = "";
-        private string _selectedLine = "";
-        public ObservableCollection<string> ComPorts {
-            get => _comPorts;
-            set => Set(ref _comPorts, value);
-        }
+        private string _buffer = string.Empty;
+        private string _selectedLine = string.Empty;
+        public ObservableCollection<string> ComPorts { get; init; }
         public string ComPort {
             get => _comPort;
             set {
@@ -31,10 +27,7 @@ namespace ChristmasClockController {
         
         public Visibility Disconnected => ((ComPortSelected == Visibility.Visible) && !(_serialPort?.IsOpen??false)) ? Visibility.Visible : Visibility.Collapsed;
         
-        public ObservableCollection<string> Console {
-            get => _console;
-            set => Set(ref _console, value);
-        }
+        public ObservableCollection<string> Console { get; init; }
         public string FirmwareDirectory {
             get => _firmwareDirectory;
             set => Set(ref _firmwareDirectory, value);
@@ -48,7 +41,9 @@ namespace ChristmasClockController {
             set {
                 Set(ref _selectedLine, value);
                 Trace.WriteLine(value);
-                Clipboard.SetText(value);
+                try{
+                    Clipboard.SetText(value);
+                }catch(Exception){}
             }
         }
         SerialPort? _serialPort;
@@ -62,9 +57,16 @@ namespace ChristmasClockController {
         public RelayCommand Send => new RelayCommand(send);
         public RelayCommand Clear => new RelayCommand(clear);
 
+        public PicoViewModel(){
+            Console = new ObservableCollection<string>();
+            ComPorts = new ObservableCollection<string>();
+        }
+
         private void getAvailableComPorts() {
-            var ports = SerialPort.GetPortNames();
-            ComPorts = new ObservableCollection<string>(ports);
+            ComPorts.Clear();
+            foreach(var p in SerialPort.GetPortNames()){
+                ComPorts.Add(p);
+            }
         }
 
         private void disconnect() {
@@ -84,18 +86,24 @@ namespace ChristmasClockController {
             _serialPort.RtsEnable = true;
             App.Current.MainWindow.Title = "Connected to " + ComPort;
             _serialPort.DataReceived += (sender, e) => {
-                var input = _serialPort.ReadExisting();
-                if (input[input.Length - 1] != '\n')
-                {
-                    _buffer += input;
+                _buffer += _serialPort.ReadExisting();
 
-                }
-                else
+                if(_buffer.Contains('\n'))
                 {
-                    App.Current.Dispatcher.Invoke(() => {
-                        Console.Add(_buffer + input.Trim());
-                        _buffer = "";
-                    });
+                    var tmp = _buffer.Split('\n', 2, System.StringSplitOptions.RemoveEmptyEntries);
+                    if(tmp.Length == 1){
+                        _buffer = string.Empty;
+                        App.Current.Dispatcher.Invoke(() => {
+                            Console.Add(tmp[0].TrimEnd());
+                        });
+                    }else if(tmp.Length == 2){
+                        _buffer = tmp[1];
+                        App.Current.Dispatcher.Invoke(() => {
+                            Console.Add(tmp[0].TrimEnd());
+                        });
+                    }else{
+                        System.Console.WriteLine("Error during String split: more then 2 strings in spritarray!");
+                    }
                 }
             };
             OnPropertyChanged(nameof(Connected));

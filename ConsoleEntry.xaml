@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
         <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding}" Height="auto"/>
         <Grid HorizontalAlignment="Left" Grid.Column="0" Grid.Row="1" DataContext="{Binding Converter={StaticResource ImageConverter}}">
-            <Image Visibility="{Binding Converter={StaticResource ImageVisibilityConverter}}" Source="{Binding}" Height="100"/>
+            <Image Visibility="{Binding Converter={StaticResource ImageVisibilityConverter}}" Source="{Binding}" Height="104"/>
         </Grid>
     </Grid>
 </UserControl>
