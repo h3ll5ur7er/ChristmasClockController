@@ -21,7 +21,7 @@ namespace ChristmasClockController {
                 var i = 0;
                 for(int y = 0; y < height; y++){
                     for(int x = 0; x < width; x++, i+=4){
-                        bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(bytes[i +1], bytes[i], bytes[i +2]));
+                        bmp.SetPixel(x, y, System.Drawing.Color.FromArgb(bytes[i +2], bytes[i+3], bytes[i +1]));
                     }
                 }
                 var image = new BitmapImage();
